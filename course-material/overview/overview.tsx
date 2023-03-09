@@ -1,195 +1,202 @@
 import * as React from 'react';
 import styled from 'styled-components';
-import { TheoryEntry, LabEntry } from './entry';
-
-export interface IProps
-{
-    className ?: string;
-}
-
-export interface IState { }
 
 
-const Table = styled.table`
-    margin: 1em auto;
-    width: 40%;
+
+const TopicHtml = styled.div`
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding-left: 1em;
+    padding-right: 1em;
+    font-variant: small-caps;
+    margin: 1px auto;
+    &:nth-child(odd) { background: #BBF; }
+    &:nth-child(even) { background: #BBF; }
+    width: 100%;
 `;
 
-const Row = styled.tr`
+const TopicChildrenHtml = styled.div`
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 0.2em;
 `;
 
-const HeaderRow = styled(Row)`
-    background: black;
+const TopicChildHtml = styled.div`
+    text-decoration-line: none;
+    & a {
+        text-decoration-line: none;
+    }
+`;
+
+const SlideBlock = styled(TopicChildHtml)``;
+
+const ExerciseBlock = styled(TopicChildHtml)``;
+
+const TopicDescriptionHtml = styled.div`
+    display: flex;
+    flex-direction: row;
+    justify-contents: flex-start;
+    align-items: center;
+`;
+
+const TopicNameHtml = styled.div`
+    height: 2em;
+    line-height: 2em;
+    font-size: 125%;
+`;
+
+const WeekContainerHtml = styled.div`
+    display: flex;
+    flex-direction: row;
+    justify-contents: flex-start;
+    width: 100%;
+    margin: 0.2em;
+`;
+
+const WeekLabelHtml = styled.div`
+    writing-mode: tb;
+    text-orientation: mixed;
+    transform: rotate(180deg);
+    text-align: center;
+    font-weight: bold;
     color: white;
-`;
-
-const Header = styled.th`
+    background: black;
+    font-size: 125%;
+    font-variant: small-caps;
     padding: 0.5em;
 `;
 
-const WeekHeader = styled(Header)`
-    width: 5em;
+const WeekChildrenContainerHtml = styled.div`
+    display: flex;
+    flex-direction: column;
+    justify-contents: flex-start;
+    width: 100%;
 `;
 
-const Week = styled.td`
-    text-align: center;
-    background: black;
-    color: white;
-    font-size: 200%;
-    font-weight: bold;
-    user-select: none;
+const OverviewHtml = styled.div`
+    margin: 1em auto;
+    width: 500px;
 `;
 
-export class Overview extends React.Component<IProps, IState>
+function Topic(props : { name: string, children ?: React.ReactNode })
 {
-    render()
+    return (
+        <TopicHtml>
+            <TopicDescriptionHtml>
+                <TopicNameHtml>
+                    {props.name}
+                </TopicNameHtml>
+            </TopicDescriptionHtml>
+            <TopicChildrenHtml>
+                {props.children}
+            </TopicChildrenHtml>
+        </TopicHtml>
+    );
+}
+
+function Slides(props : { id: string })
+{
+    const url = `/slides/topics/${props.id}.pdf`;
+
+    return (
+        <SlideBlock>
+            <a href={url}>📖</a>
+        </SlideBlock>
+    );
+}
+
+function Exercises(props : { id: string })
+{
+    const url = `labs/${props.id}/assignment.html`;
+
+    return (
+        <ExerciseBlock>
+            <a href={url}>🔨</a>
+        </ExerciseBlock>
+    );
+}
+
+function WeekContainer(props : { week : number, children ?: React.ReactNode })
+{
+    return (
+        <WeekContainerHtml>
+            <WeekLabelHtml>
+                week {props.week}
+            </WeekLabelHtml>
+            <WeekChildrenContainerHtml>
+                {props.children}
+            </WeekChildrenContainerHtml>
+        </WeekContainerHtml>
+    );
+}
+
+export function Overview(props : {})
+{
+    return (
+        <OverviewHtml>
+            <WeekContainer week={1}>
+                {topic('C++ Introduction', true, false, 'cpp-intro')}
+                {topic('Declarations', true, true)}
+                {topic('Preprocessor', true, true)}
+            </WeekContainer>
+            <WeekContainer week={2}>
+                {topic('Allocation Methods', true, false)}
+                {topic('Pointers', true, true)}
+            </WeekContainer>
+            <WeekContainer week={3}>
+                {topic("Heap Allocation", true, true)}
+                {topic("Arrays", true, true)}
+                {topic("Containers", true, true)}
+            </WeekContainer>
+            <WeekContainer week={4}>
+                {topic("Const", true, false)}
+                {topic("Exercise on types", false, true, 'types')}
+                {topic("References", true, true)}
+            </WeekContainer>
+            <WeekContainer week={5}>
+                {topic("Classes (overview)", true, false, 'classes-overview')}
+                {topic("Constructors", true, false)}
+                {topic("Structs", true, false)}
+                {topic("sizeof", true, false)}
+                {topic("Const Correctness", true, false)}
+                {topic("Classes", false, true)}
+            </WeekContainer>
+            <WeekContainer week={6}>
+                {topic("Default Parameter Values", true, true)}
+                {topic("Operator Overloading", true, true)}
+                {topic("RAII", true, false)}
+                {topic("Smart Pointers", true, true)}
+            </WeekContainer>
+            <WeekContainer week={7}>
+                {topic("Inheritance", true, true)}
+                {topic("Templates", true, true)}
+                {topic("Casts", true, true)}
+            </WeekContainer>
+            <WeekContainer week={8}>
+                {topic("Bit Manipulation", true, false)}
+                {topic("Compression: Introduction", true, false, 'compression-intro')}
+                {topic("Compression: Theory", true, false, 'compression-theory')}
+                {topic("Compression: RLE", true, false, 'compression-rle')}
+                {topic("Compression: Huffman", true, false, 'compression-huffman')}
+                {topic("Compression: LZ77", true, false, 'compression-lz77')}
+            </WeekContainer>
+        </OverviewHtml>
+    );
+
+
+    function topic(name : string, slides : boolean, exercises : boolean, id ?: string)
     {
-        // const me = this;
+        id = id || name.toLocaleLowerCase().replaceAll(' ', '-');
 
         return (
-            <Table className={this.props.className}>
-                <tbody>
-                    <HeaderRow>
-                        <WeekHeader>Week</WeekHeader>
-                        <Header>Topic</Header>
-                        <Header>Type</Header>
-                    </HeaderRow>
-                    {this.range(this.firstWeek, this.lastWeek + 1).map(i => this.renderWeek(i))}
-                </tbody>
-            </Table>
+            <Topic name={name}>
+                {slides ? <Slides id={id} /> : <></>}
+                {exercises ? <Exercises id={id} /> : <></>}
+            </Topic>
         );
-    }
-
-    private get firstWeek() : number { return 1; }
-
-    private get lastWeek() : number { return 8; }
-
-    private renderWeek(n : number) : JSX.Element
-    {
-        const rows = this.weekRows(n);
-
-        const elts = this.range(0, rows.length).map(i => {
-            if ( i === 0 )
-            {
-                return (
-                    <Row>
-                        <Week rowSpan={rows.length}>{n}</Week>
-                        {rows[i]}
-                    </Row>
-                );
-            }
-            else
-            {
-                return (
-                    <Row>
-                        {rows[i]}
-                    </Row>
-                );
-            }
-        });
-
-        return <React.Fragment>{elts}</React.Fragment>;
-    }
-
-    private weekRows(n : number) : JSX.Element[]
-    {
-        const weeks : JSX.Element[][] = [];
-
-        weeks[1] = [
-            theory('C++ Introduction', 'cpp-intro'),
-            theory('Declarations'),
-            lab('Declarations'),
-            theory('Preprocessor'),
-            lab('Preprocessor'),
-        ];
-
-        weeks[2] = [
-            theory('Allocation Methods'),
-            theory('Pointers'),
-            lab('Pointers'),
-        ];
-
-        weeks[3] = [
-            theory('Heap Allocation'),
-            lab('Heap Allocation'),
-            theory('Arrays'),
-            lab('Arrays'),
-            theory('Containers'),
-        ];
-
-        weeks[4] = [
-            theory('Const'),
-            lab('Types'),
-            theory('References'),
-            lab('References'),
-        ];
-
-        weeks[5] = [
-            theory('Classes (overview)', 'classes-overview'),
-            theory('Constructors'),
-            theory('Structs'),
-            theory('sizeof'),
-            theory('Const Correctness'),
-            lab('Types 2'),
-            lab('Classes'),
-        ];
-
-        weeks[6] = [
-            theory('Default Parameter Values'),
-            lab('Default Parameter Values'),
-            theory('Operator Overloading'),
-            lab('Operator Overloading'),
-            theory('RAII'),
-            theory('Smart Pointers'),
-            lab('Smart Pointers'),
-        ];
-
-        weeks[7] = [
-            theory('Inheritance'),
-            lab('Inheritance'),
-            theory('Templates'),
-            lab('Templates'),
-            theory('Casting', 'casts'),
-            lab('Casting', 'casts'),
-        ];
-
-        weeks[8] = [
-            theory('Performance (optional)', 'performance'),
-            lab('Performance (optional)', 'performance'),
-            theory('Bit Manipulation'),
-            theory('Technical Details'),
-        ];
-
-        return weeks[n];
-
-
-        function theory(caption : string, filename : string | null = null) : JSX.Element
-        {
-            if ( filename === null )
-            {
-                filename = caption.toLowerCase().replace(' ', '-');
-            }
-
-            const url = `topics/${filename}.pdf`;
-
-            return <TheoryEntry caption={caption} url={url} />
-        }
-
-        function lab(caption : string, directoryName : string | null = null) : JSX.Element
-        {
-            if ( directoryName === null )
-            {
-                directoryName = caption.toLowerCase();
-            }
-
-            const url = `labs/${directoryName}/index.html`;
-
-            return <LabEntry caption={caption} url={url} />
-        }
-    }
-
-    private range(a : number, b : number) : number[]
-    {
-        return a < b ? [ a, ...this.range(a + 1, b) ] : [];
     }
 }
